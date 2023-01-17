@@ -1,15 +1,31 @@
 import React from "react";
-import EventList from "../components/events/event-list";
-import { getFeaturedEvents } from "../data/dummy";
+import fs from "fs/promises";
+import path from "path";
+import { BackupOutlined } from "@mui/icons-material";
 
-const HomePage = () => {
-    const featuredEvents = getFeaturedEvents();
+const HomePage = (props) => {
+    const { products } = props;
 
     return (
-        <div>
-            <EventList items={featuredEvents} />
-        </div>
+        <ul>
+            {products.map((product) => (
+                <li key={product.id}>{product.title}</li>
+            ))}
+        </ul>
     );
 };
+
+export async function getStaticProps() {
+    // cwd is current working directory
+    const filePath = path.join(process.cwd(), "data", "dummy-backend.json");
+    const jsonData = await fs.readFile(filePath);
+    const data = JSON.parse(jsonData);
+
+    return {
+        props: {
+            products: data.products,
+        },
+    };
+}
 
 export default HomePage;
